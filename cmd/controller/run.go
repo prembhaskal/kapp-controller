@@ -230,7 +230,7 @@ func Run(opts Options, runLog logr.Logger) error {
 
 		ctrl, err := controller.New("pkgi", mgr, controller.Options{
 			Reconciler:              reconciler,
-			MaxConcurrentReconciles: 1,
+			MaxConcurrentReconciles: 2,
 		})
 		if err != nil {
 			return fmt.Errorf("Setting up PackageInstalls reconciler: %s", err)
