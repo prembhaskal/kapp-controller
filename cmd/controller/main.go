@@ -21,6 +21,7 @@ func main() {
 	var sidecarexec bool
 
 	flag.IntVar(&ctrlOpts.Concurrency, "concurrency", 10, "Max concurrent reconciles")
+	flag.IntVar(&ctrlOpts.PkgiConcurrency, "pkgi-concurrency", 1, "Max concurrent pkgi reconciles")
 	flag.StringVar(&ctrlOpts.Namespace, "namespace", "", "Namespace to watch")
 	flag.StringVar(&ctrlOpts.PackagingGlobalNS, "packaging-global-namespace", "", "The namespace used for global packaging resources")
 	flag.StringVar(&ctrlOpts.MetricsBindAddress, "metrics-bind-address", ":8080", "Address for metrics server. If 0, then metrics server doesnt listen on any port.")

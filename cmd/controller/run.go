@@ -45,6 +45,7 @@ const (
 
 type Options struct {
 	Concurrency            int
+	PkgiConcurrency        int
 	Namespace              string
 	EnablePprof            bool
 	APIRequestTimeout      time.Duration
@@ -66,8 +67,10 @@ func Run(opts Options, runLog logr.Logger) error {
 		restConfig.Timeout = opts.APIRequestTimeout
 	}
 
-	mgr, err := manager.New(restConfig, manager.Options{Namespace: opts.Namespace,
-		Scheme: kcconfig.Scheme, MetricsBindAddress: opts.MetricsBindAddress})
+	mgr, err := manager.New(restConfig, manager.Options{
+		Namespace: opts.Namespace,
+		Scheme:    kcconfig.Scheme, MetricsBindAddress: opts.MetricsBindAddress,
+	})
 	if err != nil {
 		return fmt.Errorf("Setting up overall controller manager: %s", err)
 	}
@@ -230,7 +233,7 @@ func Run(opts Options, runLog logr.Logger) error {
 
 		ctrl, err := controller.New("pkgi", mgr, controller.Options{
 			Reconciler:              reconciler,
-			MaxConcurrentReconciles: 2,
+			MaxConcurrentReconciles: max(1, opts.PkgiConcurrency),
 		})
 		if err != nil {
 			return fmt.Errorf("Setting up PackageInstalls reconciler: %s", err)
@@ -295,6 +298,13 @@ func Run(opts Options, runLog logr.Logger) error {
 	}
 
 	return nil
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 // parseTLSCipherSuites tries to validate and return the user-input ciphers or returns a default list
